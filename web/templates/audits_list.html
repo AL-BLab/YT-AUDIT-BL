@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Audit History | {{ app_name }}{% endblock %}
+
+{% block content %}
+<section class="hero compact">
+  <h1>Audit History</h1>
+  <p>Filter completed and in-flight audits by client, status, or date.</p>
+</section>
+
+<section class="panel">
+  <form class="filter-grid" method="get" action="{{ url_for('pages.audits_list') }}">
+    <div class="field">
+      <label class="field-label" for="q">Search</label>
+      <input class="field-input" id="q" name="q" type="text" value="{{ request.args.get('q', '') }}" placeholder="Client or channel">
+    </div>
+    <div class="field">
+      <label class="field-label" for="status">Status</label>
+      <select class="field-input" id="status" name="status">
+        <option value="">All</option>
+        {% for st in ['queued', 'running', 'completed', 'failed'] %}
+        <option value="{{ st }}" {% if request.args.get('status') == st %}selected{% endif %}>{{ st }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field">
+      <label class="field-label" for="client">Client</label>
+      <input class="field-input" id="client" name="client" type="text" value="{{ request.args.get('client', '') }}" placeholder="Client name">
+    </div>
+    <div class="field">
+      <label class="field-label" for="start_date">Start Date</label>
+      <input class="field-input" id="start_date" name="start_date" type="date" value="{{ request.args.get('start_date', '') }}">
+    </div>
+    <div class="field">
+      <label class="field-label" for="end_date">End Date</label>
+      <input class="field-input" id="end_date" name="end_date" type="date" value="{{ request.args.get('end_date', '') }}">
+    </div>
+    <div class="filter-actions">
+      <button type="submit" class="btn btn-primary">Apply Filters</button>
+      <a class="btn btn-ghost" href="{{ url_for('pages.audits_list') }}">Reset</a>
+    </div>
+  </form>
+</section>
+
+<section class="panel">
+  {% include "partials/jobs_table.html" %}
+</section>
+{% endblock %}

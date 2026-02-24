@@ -1,0 +1,33 @@
+# YouTube Data API
+google-api-python-client==2.150.0
+google-auth-httplib2==0.2.0
+google-auth-oauthlib==1.2.1
+google-auth>=2.35.0
+google-cloud-storage>=2.18.2
+google-cloud-tasks>=2.17.0
+
+# Google Sheets API
+gspread==6.1.4
+gspread-formatting==1.2.0
+
+# Web app
+Flask>=3.0.3
+SQLAlchemy>=2.0.36
+gunicorn>=23.0.0
+psycopg2-binary>=2.9.10
+
+# Data processing
+python-dateutil==2.9.0.post0
+openpyxl>=3.1.5
+
+# Environment variables
+python-dotenv==1.0.1
+
+# URL parsing and validation
+validators==0.34.0
+
+# Data analysis
+numpy>=2.0.2
+
+# Testing
+pytest>=8.3.4

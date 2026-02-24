@@ -1,0 +1,8 @@
+{% macro action_button(label, href=None, variant='primary', button_type='button', classes='', attrs='') -%}
+  {%- set base = 'btn btn-' ~ variant ~ ' ' ~ classes -%}
+  {% if href %}
+    <a class="{{ base }}" href="{{ href }}" {{ attrs|safe }}>{{ label }}</a>
+  {% else %}
+    <button type="{{ button_type }}" class="{{ base }}" {{ attrs|safe }}>{{ label }}</button>
+  {% endif %}
+{%- endmacro %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Audit {{ job.id }} | {{ app_name }}{% endblock %}
+
+{% block content %}
+<section class="hero compact">
+  <h1>Audit Job Detail</h1>
+  <p>{{ job.client.name }} · {{ job.channel_url }}</p>
+</section>
+
+<section class="detail-grid" x-data='jobDetail({{ job.id|tojson }}, {{ url_for("api.audit_status", job_id=job.id)|tojson }}, {{ job.status|tojson }}, {{ (job.progress_step or "")|tojson }}, {{ (job.error_message or "")|tojson }})' x-init="start()">
+  <article class="panel">
+    <div class="panel-head">
+      <h2>Status Timeline</h2>
+      <span class="badge" :class="'badge-' + (status || 'default')" x-text="status"></span>
+    </div>
+
+    <ol class="timeline">
+      <li :class="status === 'queued' || status === 'running' || status === 'completed' || status === 'failed' ? 'done' : ''">Queued</li>
+      <li :class="status === 'running' || status === 'completed' || status === 'failed' ? 'done' : ''">Running</li>
+      <li :class="status === 'completed' ? 'done' : ''">Completed</li>
+      <li :class="status === 'failed' ? 'failed' : ''">Failed</li>
+    </ol>
+
+    <div class="kv-grid">
+      <div><span>Progress</span><strong x-text="progress">{{ job.progress_step }}</strong></div>
+      <div><span>Created</span><strong>{{ job.created_at.strftime('%Y-%m-%d %H:%M') }}</strong></div>
+      <div><span>Crawl Scope</span><strong>{{ "Top " ~ job.max_videos_override if job.crawl_mode == "limited" and job.max_videos_override else "All videos" }}</strong></div>
+      <div><span>Started</span><strong x-text="startedAt">{{ job.started_at.strftime('%Y-%m-%d %H:%M') if job.started_at else '—' }}</strong></div>
+      <div><span>Finished</span><strong x-text="finishedAt">{{ job.finished_at.strftime('%Y-%m-%d %H:%M') if job.finished_at else '—' }}</strong></div>
+    </div>
+
+    <div class="error-box" x-show="errorMessage" x-text="errorMessage"></div>
+  </article>
+
+  <article class="panel">
+    <h2>Result Summary</h2>
+    <div class="summary-grid">
+      <div><span>Health Score</span><strong x-text="summary.health_score ?? '—'">{{ job.summary_health_score or '—' }}</strong></div>
+      <div><span>High Priority</span><strong x-text="summary.high_priority ?? '—'">{{ job.summary_high_priority or '—' }}</strong></div>
+      <div><span>Medium Priority</span><strong x-text="summary.medium_priority ?? '—'">{{ job.summary_medium_priority or '—' }}</strong></div>
+      <div><span>Low Priority</span><strong x-text="summary.low_priority ?? '—'">{{ job.summary_low_priority or '—' }}</strong></div>
+      <div><span>Videos Analyzed</span><strong x-text="summary.videos_analyzed ?? '—'">{{ job.videos_analyzed or '—' }}</strong></div>
+    </div>
+
+    <h3>Artifacts</h3>
+    <div class="artifact-actions">
+      <button class="btn btn-primary" @click="downloadArtifact('excel')">Download Excel</button>
+      <button class="btn btn-secondary" @click="downloadArtifact('markdown')">Download Markdown</button>
+      <button class="btn btn-ghost" @click="downloadArtifact('raw')">Raw JSON</button>
+      <button class="btn btn-ghost" @click="downloadArtifact('analysis')">Analysis JSON</button>
+    </div>
+  </article>
+
+  <article class="panel span-2">
+    <div class="panel-head">
+      <h2>Execution Log</h2>
+      <a class="row-link" href="{{ url_for('pages.audits_list') }}">Back to history</a>
+    </div>
+    <div id="logStream" hx-get="{{ url_for('pages.audit_logs_partial', job_id=job.id) }}" hx-trigger="load, every 5s" hx-swap="innerHTML"></div>
+  </article>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/job_detail.js') }}"></script>
+{% endblock %}

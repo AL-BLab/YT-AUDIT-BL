@@ -1,0 +1,42 @@
+{% from "components/badge.html" import status_badge %}
+{% from "components/table.html" import table_shell %}
+
+{% set next_path = request.full_path if request.query_string else request.path %}
+{% call table_shell(['Created', 'Client', 'Channel', 'Status', 'Progress', 'Actions']) %}
+  {% for job in jobs %}
+  <tr>
+    <td>{{ job.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+    <td>{{ job.client.name }}</td>
+    <td>
+      <div class="table-primary">{{ job.channel_name or 'Pending lookup' }}</div>
+      <div class="table-sub">{{ job.channel_url }}</div>
+    </td>
+    <td>{{ status_badge(job.status) }}</td>
+    <td>{{ job.progress_step }}</td>
+    <td>
+      <div class="row-actions">
+        <a class="row-link" href="{{ url_for('pages.audit_detail', job_id=job.id) }}">Open</a>
+        <form
+          class="inline-form"
+          method="post"
+          action="{{ url_for('pages.delete_audit', job_id=job.id) }}"
+          onsubmit="return confirm('Delete this audit and all generated files? This cannot be undone.');"
+        >
+          <input type="hidden" name="next" value="{{ next_path }}">
+          <button
+            type="submit"
+            class="btn btn-danger btn-inline"
+            {% if job.status == 'running' %}disabled title="Running audits cannot be deleted"{% endif %}
+          >
+            Delete
+          </button>
+        </form>
+      </div>
+    </td>
+  </tr>
+  {% else %}
+  <tr>
+    <td colspan="6" class="empty-cell">No audit jobs yet.</td>
+  </tr>
+  {% endfor %}
+{% endcall %}

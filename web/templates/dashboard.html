@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% from "components/button.html" import action_button %}
+
+{% block title %}Dashboard | {{ app_name }}{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <h1>Client Audit Operations</h1>
+  <p>Run YouTube channel audits, track execution, and deliver polished outputs for client teams.</p>
+  {{ action_button('Create New Audit', href=url_for('pages.new_audit_form'), variant='primary') }}
+</section>
+
+<section class="kpi-grid">
+  <article class="kpi-card">
+    <h2>Queued</h2>
+    <strong>{{ stats.queued }}</strong>
+    <p>Waiting for worker execution</p>
+  </article>
+  <article class="kpi-card">
+    <h2>Running</h2>
+    <strong>{{ stats.running }}</strong>
+    <p>Active background audits</p>
+  </article>
+  <article class="kpi-card">
+    <h2>Failed</h2>
+    <strong>{{ stats.failed }}</strong>
+    <p>Need retry or troubleshooting</p>
+  </article>
+  <article class="kpi-card">
+    <h2>Completed (7d)</h2>
+    <strong>{{ stats.completed_recent }}</strong>
+    <p>Delivered audits in the last week</p>
+  </article>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>Recent Audit Jobs</h2>
+    <a class="row-link" href="{{ url_for('pages.audits_list') }}">View full history</a>
+  </div>
+  {% set jobs = recent_jobs %}
+  {% include "partials/jobs_table.html" %}
+</section>
+{% endblock %}

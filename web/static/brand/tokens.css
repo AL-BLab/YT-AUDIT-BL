@@ -1,0 +1,49 @@
+/*
+  Official Brainlabs brand tokens.
+  Sources: brainlabsdigital.com + brand data sheet (2026-02-23).
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@500;600;700&family=Roboto:wght@400;500;700&display=swap');
+
+:root {
+  --bl-font-display: "Kanit", sans-serif;
+  --bl-font-body: "Roboto", sans-serif;
+
+  --bl-color-bg: #ffffff;
+  --bl-color-surface: #ffffff;
+  --bl-color-primary: #ffdd33;
+  --bl-color-primary-strong: #e6c600;
+  --bl-color-secondary: #1b1b1b;
+  --bl-color-accent: #fff95f;
+  --bl-color-accent-light: #ffdd33;
+  --bl-color-text: #1b1b1b;
+  --bl-color-muted: #67625a;
+  --bl-color-border: #e8e4da;
+  --bl-color-hero: #222226;
+  --bl-color-hero-soft: #3a393f;
+  --bl-color-log-bg: #081728;
+  --bl-color-log-text: #dcf2ff;
+  --bl-color-chip-bg: #f4f4f4;
+
+  --bl-color-success: #118657;
+  --bl-color-warning: #a66a00;
+  --bl-color-danger: #c63838;
+  --bl-color-info: #126e87;
+
+  --bl-radius-sm: 8px;
+  --bl-radius-md: 12px;
+  --bl-radius-lg: 14px;
+  --bl-radius-pill: 100px;
+
+  --bl-shadow-soft: 0 8px 22px rgba(27, 27, 27, 0.08);
+  --bl-shadow-strong: 0 18px 44px rgba(27, 27, 27, 0.2);
+
+  --bl-space-1: 0.25rem;
+  --bl-space-2: 0.5rem;
+  --bl-space-3: 0.75rem;
+  --bl-space-4: 1rem;
+  --bl-space-5: 1.25rem;
+  --bl-space-6: 1.5rem;
+  --bl-space-8: 2rem;
+  --bl-space-10: 2.5rem;
+}

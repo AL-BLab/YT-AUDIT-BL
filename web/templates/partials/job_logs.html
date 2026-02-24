@@ -1,0 +1,5 @@
+{% if job.log_text %}
+<pre class="log-box">{{ job.log_text }}</pre>
+{% else %}
+<div class="empty-state">No logs yet. Execution updates will appear here.</div>
+{% endif %}

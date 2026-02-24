@@ -1,0 +1,9 @@
+name: projects/PROJECT_ID/locations/us-central1/jobs/brainlabs-audit-cleanup
+schedule: "0 4 * * *"
+timeZone: "Etc/UTC"
+httpTarget:
+  uri: https://REPLACE_WITH_CLOUD_RUN_URL/internal/cleanup
+  httpMethod: POST
+  oidcToken:
+    serviceAccountEmail: REPLACE_WITH_SCHEDULER_SA@PROJECT_ID.iam.gserviceaccount.com
+    audience: https://REPLACE_WITH_CLOUD_RUN_URL/internal/cleanup

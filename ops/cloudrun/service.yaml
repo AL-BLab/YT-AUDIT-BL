@@ -1,0 +1,56 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: brainlabs-youtube-audit
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/execution-environment: gen2
+        run.googleapis.com/cpu-throttling: "false"
+    spec:
+      serviceAccountName: REPLACE_WITH_RUNTIME_SERVICE_ACCOUNT
+      containers:
+        - image: REGION-docker.pkg.dev/PROJECT_ID/REPO/brainlabs-youtube-audit:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: APP_ENV
+              value: production
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: DATABASE_URL
+                  key: latest
+            - name: YOUTUBE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: YOUTUBE_API_KEY
+                  key: latest
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: SECRET_KEY
+                  key: latest
+            - name: USE_GCS
+              value: "true"
+            - name: GCS_BUCKET
+              value: REPLACE_WITH_BUCKET
+            - name: GOOGLE_CLOUD_PROJECT
+              value: PROJECT_ID
+            - name: USE_CLOUD_TASKS
+              value: "true"
+            - name: TASK_QUEUE_NAME
+              value: audit-jobs
+            - name: TASK_QUEUE_LOCATION
+              value: us-central1
+            - name: TASK_HANDLER_URL
+              value: https://REPLACE_WITH_CLOUD_RUN_URL/internal/tasks/run-audit
+            - name: INTERNAL_TASK_AUDIENCE
+              value: https://REPLACE_WITH_CLOUD_RUN_URL/internal/tasks/run-audit
+            - name: TASK_SERVICE_ACCOUNT_EMAIL
+              value: REPLACE_WITH_TASK_SA@PROJECT_ID.iam.gserviceaccount.com
+            - name: ALLOW_INSECURE_INTERNAL
+              value: "false"
+            - name: RETENTION_DAYS
+              value: "180"

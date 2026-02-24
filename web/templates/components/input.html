@@ -1,0 +1,29 @@
+{% macro text_input(name, label, value='', input_type='text', placeholder='', required=False, help_text='', classes='') -%}
+<div class="field {{ classes }}">
+  <label class="field-label" for="{{ name }}">{{ label }}</label>
+  <input
+    id="{{ name }}"
+    name="{{ name }}"
+    type="{{ input_type }}"
+    value="{{ value }}"
+    placeholder="{{ placeholder }}"
+    class="field-input"
+    {% if required %}required{% endif %}
+  >
+  {% if help_text %}<p class="field-help">{{ help_text }}</p>{% endif %}
+</div>
+{%- endmacro %}
+
+{% macro textarea_input(name, label, value='', placeholder='', rows=4, help_text='') -%}
+<div class="field">
+  <label class="field-label" for="{{ name }}">{{ label }}</label>
+  <textarea
+    id="{{ name }}"
+    name="{{ name }}"
+    rows="{{ rows }}"
+    placeholder="{{ placeholder }}"
+    class="field-textarea"
+  >{{ value }}</textarea>
+  {% if help_text %}<p class="field-help">{{ help_text }}</p>{% endif %}
+</div>
+{%- endmacro %}
