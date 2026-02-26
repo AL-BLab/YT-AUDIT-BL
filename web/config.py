@@ -50,10 +50,13 @@ class AppConfig:
     @staticmethod
     def from_env() -> "AppConfig":
         root = Path.cwd()
-        default_db = f"sqlite:///{root / '.tmp' / 'coworker_audit.db'}"
+        default_db_path = root / '.tmp' / 'coworker_audit.db'
+        default_db_path.parent.mkdir(parents=True, exist_ok=True)
+        default_db = f"sqlite:///{default_db_path}"
         local_artifact_dir = Path(os.getenv("LOCAL_ARTIFACT_DIR", ".tmp/web_artifacts"))
         if not local_artifact_dir.is_absolute():
             local_artifact_dir = root / local_artifact_dir
+        local_artifact_dir.mkdir(parents=True, exist_ok=True)
 
         return AppConfig(
             app_env=os.getenv("APP_ENV", "development"),
