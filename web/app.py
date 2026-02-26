@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from flask import Flask, g
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from web.config import AppConfig
 from web.db import init_db
@@ -42,6 +43,7 @@ def create_app() -> Flask:
         }
         return mapping.get((value or "").lower(), "default")
 
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
     return app
 
 
