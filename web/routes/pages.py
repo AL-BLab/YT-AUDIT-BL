@@ -189,10 +189,21 @@ def create_audit():
         db_session.commit()
         db_session.refresh(job)
 
-        enqueue_info = enqueue_audit_job(current_app._get_current_object(), job.id)
-        job.progress_step = f"Queued ({enqueue_info.get('mode')})"
-        db_session.add(job)
-        db_session.commit()
+        try:
+            enqueue_info = enqueue_audit_job(current_app._get_current_object(), job.id)
+            job.progress_step = f"Queued ({enqueue_info.get('mode')})"
+            db_session.add(job)
+            db_session.commit()
+        except Exception as enqueue_exc:  # pylint: disable=broad-except
+            current_app.logger.exception("Failed to enqueue audit job %s: %s", job.id, enqueue_exc)
+            job.status = "failed"
+            job.progress_step = "Failed"
+            job.error_message = f"Enqueue error: {enqueue_exc}"
+            job.finished_at = datetime.utcnow()
+            db_session.add(job)
+            db_session.commit()
+            flash(f"Audit job could not be queued: {enqueue_exc}", "error")
+            return redirect(url_for("pages.audit_detail", job_id=job.id))
 
         flash("Audit job created and queued.", "success")
         return redirect(url_for("pages.audit_detail", job_id=job.id))
@@ -226,6 +237,35 @@ def audit_logs_partial(job_id: str):
         db_session.close()
 
 
+@pages_bp.post("/audits/<job_id>/cancel")
+def cancel_audit(job_id: str):
+    """Force-fail a stuck queued or running audit so it can be deleted."""
+    db_session = SessionLocal()
+    try:
+        _load_user(db_session)
+        redirect_target = _safe_next_path("pages.dashboard")
+
+        job = db_session.query(AuditJob).filter(AuditJob.id == job_id).one_or_none()
+        if job is None:
+            flash("Audit job not found.", "error")
+            return redirect(redirect_target)
+
+        if job.status not in {"queued", "running"}:
+            flash("Only queued or running audits can be cancelled.", "error")
+            return redirect(redirect_target)
+
+        job.status = "failed"
+        job.progress_step = "Cancelled"
+        job.error_message = "Manually cancelled by user"
+        job.finished_at = datetime.utcnow()
+        db_session.add(job)
+        db_session.commit()
+        flash("Audit job cancelled. You can now delete it if needed.", "success")
+        return redirect(redirect_target)
+    finally:
+        db_session.close()
+
+
 @pages_bp.post("/audits/<job_id>/delete")
 def delete_audit(job_id: str):
     db_session = SessionLocal()
@@ -242,7 +282,10 @@ def delete_audit(job_id: str):
             return redirect(redirect_target)
 
         if job.status == "running":
-            flash("Running audits cannot be deleted.", "error")
+            flash(
+                "This audit is still running. Cancel it first using the Cancel button, then delete it.",
+                "error",
+            )
             return redirect(redirect_target)
 
         deleted_artifacts = 0

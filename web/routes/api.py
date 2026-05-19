@@ -96,6 +96,30 @@ def audit_status(job_id: str):
         db_session.close()
 
 
+@api_bp.post("/api/audits/<job_id>/cancel")
+def cancel_audit_api(job_id: str):
+    """Force-fail a stuck queued or running audit."""
+    _ensure_authenticated()
+    db_session = SessionLocal()
+    try:
+        job = db_session.query(AuditJob).filter(AuditJob.id == job_id).one_or_none()
+        if not job:
+            abort(404)
+
+        if job.status not in {"queued", "running"}:
+            return jsonify({"error": "Only queued or running audits can be cancelled."}), 409
+
+        job.status = "failed"
+        job.progress_step = "Cancelled"
+        job.error_message = "Manually cancelled by user"
+        job.finished_at = datetime.utcnow()
+        db_session.add(job)
+        db_session.commit()
+        return jsonify({"status": "cancelled", "job_id": job_id})
+    finally:
+        db_session.close()
+
+
 @api_bp.get("/api/audits/<job_id>/artifacts/<artifact_type>")
 def artifact_signed_url(job_id: str, artifact_type: str):
     _ensure_authenticated()

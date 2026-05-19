@@ -127,7 +127,7 @@ class DeleteAuditRouteTests(unittest.TestCase):
 
         response = self.client.post(f"/audits/{job_id}/delete", data={"next": "/"}, follow_redirects=True)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b"Running audits cannot be deleted.", response.data)
+        self.assertIn(b"Cancel it first", response.data)
 
         db_session = SessionLocal()
         try:

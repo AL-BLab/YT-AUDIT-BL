@@ -389,6 +389,15 @@ select.field-input:focus {
   color: #fff;
 }
 
+.btn-warning {
+  background: #e07b00;
+  color: #fff;
+}
+
+.btn-warning:hover {
+  background: #c46c00;
+}
+
 .data-table {
   width: 100%;
   border-collapse: collapse;

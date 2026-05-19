@@ -16,6 +16,17 @@
     <td>
       <div class="row-actions">
         <a class="row-link" href="{{ url_for('pages.audit_detail', job_id=job.id) }}">Open</a>
+        {% if job.status in ('queued', 'running') %}
+        <form
+          class="inline-form"
+          method="post"
+          action="{{ url_for('pages.cancel_audit', job_id=job.id) }}"
+          onsubmit="return confirm('Cancel this audit? It will be marked as failed.');"
+        >
+          <input type="hidden" name="next" value="{{ next_path }}">
+          <button type="submit" class="btn btn-warning btn-inline">Cancel</button>
+        </form>
+        {% endif %}
         <form
           class="inline-form"
           method="post"
@@ -26,7 +37,7 @@
           <button
             type="submit"
             class="btn btn-danger btn-inline"
-            {% if job.status == 'running' %}disabled title="Running audits cannot be deleted"{% endif %}
+            {% if job.status == 'running' %}disabled title="Cancel the audit first, then delete it"{% endif %}
           >
             Delete
           </button>
